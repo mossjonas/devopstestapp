@@ -47,7 +47,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: devopstestapp/devops_test_app
+          tags: mossjonas/devopstestapp
           
           
           
