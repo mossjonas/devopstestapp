@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: automation
+name: CI
 
 # Controls when the workflow will run
 on:
@@ -23,18 +23,18 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-      
-      - name: Setup dotnet environment
+      - name: Checkout branch
+        uses: actions/checkout@v2
+      - name: Install dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0'
-      - name: Run restore
+          dotnet-version: 5.0.x
+      - name: Restore Nuget packages
         run: dotnet restore
-      - name: Run build
-        run: dotnet build
-      - name: Run unit tests
-        run: dotnet test
+      - name: Build
+        run: dotnet build --no-restore
+      - name: Test
+        run: dotnet test --no-build
         
       - name: Docker Login
         uses: docker/login-action@v1.12.0
@@ -42,12 +42,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v2.9.0
+      - name: Build and push
+        uses: docker/build-push-action@v2
         with:
           push: true
           tags: devopstestapp
-          
+          context: ./
           
           
           
