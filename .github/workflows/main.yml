@@ -47,7 +47,7 @@ jobs:
         with:
           push: true
           tags: devopstestapp/devops_test_app
-          context: ./
+          context: ../
           
           
           
