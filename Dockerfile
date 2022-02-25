@@ -2,14 +2,15 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://*:8080
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["devops_test_app.csproj", "."]
-RUN dotnet restore "./devops_test_app.csproj"
+COPY ["devops_test_app/devops_test_app.csproj", "./"]
+RUN dotnet restore "devops_test_app.csproj"
 COPY . .
-WORKDIR "/src/."
+WORKDIR "/src/devops_test_app"
 RUN dotnet build "devops_test_app.csproj" -c Release -o /app/build
 
 FROM build AS publish
