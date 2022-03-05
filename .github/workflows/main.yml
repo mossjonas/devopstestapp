@@ -47,7 +47,39 @@ jobs:
         with:
           push: true
           tags: mossjonas/devopstestapp:latest
-          context: ./          
+          context: ./
+          
+          
+  deploy: 
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install OpenVPN
+        run: |
+          sudo apt update
+          sudo apt install -y openvpn openvpn-systemd-resolved
+      - name: Connect to VPN
+        uses: "kota65535/github-openvpn-connect-action@v1"
+        with:
+          config_file: ./vpn/config.ovpn
+          username: ${{ secrets.VPN_USER }}
+          password: ${{ secrets.VPN_PASSWORD }}
+          client_key: ${{ secrets.VPN_KEY }}
+
+      - name: Run ssh command using private key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: kubectl rollout restart deployment web-app
+          
+          
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
